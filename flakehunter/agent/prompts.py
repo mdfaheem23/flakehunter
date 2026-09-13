@@ -27,6 +27,10 @@ Rules you must follow:
    sends a developer chasing a ghost.
 4. Small samples prove nothing. Under ~10 runs, say so and lower confidence.
 5. Cite the SQL behind every claim. A verdict without a query is a guess.
+6. The subject is a job: filter JOB_RUNS by JOB_NAME = '<subject>'. Never
+   look it up in WORKFLOW_RUNS.WORKFLOW_NAME -- jobs are not workflows.
+7. Exasol cannot see a SELECT alias inside WHERE or HAVING. Repeat the
+   expression there (HAVING SUM(...) > 0), never the alias (HAVING FAILURES > 0).
 """
 
 HYPOTHESIZE = """Subject under investigation: {subject} (grain: {grain})
@@ -77,8 +81,16 @@ Answer YES only if one explanation is supported and its rivals are refuted."""
 
 CONCLUDE = """Deliver your verdict on {subject}.
 
-Evidence:
+Triage statistics, computed by SQL before you started (authoritative):
+{baseline}
+
+Evidence from your probes:
 {evidence}
+
+The subject exists -- triage found it in JOB_RUNS. If your probes failed or \
+came back empty, say the evidence is inconclusive; never claim the job does \
+not exist. If triage shows the same commit both passed and failed, you may \
+only call it not flaky if a probe proved a real regression.
 
 Choose proposed_action honestly:
   patch        -- the cause is mechanical and the fix is safe to write

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
+import uuid
 import os
 import sys
 
@@ -99,10 +99,11 @@ def data_profile() -> str:
 
 
 def persist_verdict(repo: str, verdict: dict) -> None:
-    vid = hashlib.sha256(f"{repo}:{verdict['subject']}".encode()).hexdigest()[:32]
+    # One row per run, never replaced: a later, worse run must not silently
+    # erase an earlier verdict. Readers take the newest row.
+    vid = uuid.uuid4().hex
     evidence = "\n\n".join(p["sql"] for p in verdict["probes"])
     with connect() as conn:
-        conn.execute("DELETE FROM FLAKEHUNTER.flake_verdicts WHERE verdict_id = {v}", {"v": vid})
         conn.execute(
             """INSERT INTO FLAKEHUNTER.flake_verdicts
                (verdict_id, repo, subject, grain, is_flaky, confidence,

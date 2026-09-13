@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS flake_verdicts (
     grain           VARCHAR(16)     NOT NULL,  -- 'test' | 'job'
     is_flaky        BOOLEAN,
     confidence      DECIMAL(4,3),
-    root_cause      VARCHAR(128),              -- timing, shared_state, order_dependency...
+    root_cause      VARCHAR(2000),             -- a sentence, not a code: models write long causes
     rationale       VARCHAR(100000),
     evidence_sql    VARCHAR(100000),           -- the queries that justify it
     proposed_action VARCHAR(64),               -- patch | quarantine | report_only

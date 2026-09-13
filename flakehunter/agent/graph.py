@@ -236,6 +236,7 @@ def build_investigation_graph(llm, tools):
             SystemMessage(prompts.SYSTEM),
             HumanMessage(prompts.CONCLUDE.format(
                 subject=state["subject"],
+                baseline=state["baseline"],
                 evidence=_format_evidence(state["probes"]),
             )),
         ])

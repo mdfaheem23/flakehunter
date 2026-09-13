@@ -68,7 +68,8 @@ def load_evidence(repo: str, subject: str) -> dict:
         conn.execute("OPEN SCHEMA FLAKEHUNTER")
         verdict = conn.execute(
             """SELECT is_flaky, confidence, root_cause, rationale, evidence_sql, proposed_action
-               FROM flake_verdicts WHERE repo = {r} AND subject = {s}""", params,
+               FROM flake_verdicts WHERE repo = {r} AND subject = {s}
+               ORDER BY created_at DESC LIMIT 1""", params,
         ).fetchone()
         if verdict is None:
             raise RuntimeError(
